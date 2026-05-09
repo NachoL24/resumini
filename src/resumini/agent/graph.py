@@ -52,7 +52,10 @@ def build_graph(vault: VaultManager, chroma: ChromaClient, sqlite: SQLiteStore):
         content = run_ingest(
             Path(state["pdf_path"]), state["materia"], state["source_file"], vault, chroma
         )
-        return {"output": content, "metadata": {"materia": state["materia"], "file": state["source_file"]}}
+        return {
+            "output": content,
+            "metadata": {"materia": state["materia"], "file": state["source_file"]},
+        }
 
     def summarize_node(state: AgentState) -> dict:
         source = state.get("source_file", "")
@@ -65,8 +68,13 @@ def build_graph(vault: VaultManager, chroma: ChromaClient, sqlite: SQLiteStore):
         return {"output": content}
 
     def edit_node_fn(state: AgentState) -> dict:
-        content = run_edit(state["materia"], state["source_file"], state["edit_instruction"], vault, chroma)
-        return {"output": content, "metadata": {"materia": state["materia"], "file": state["source_file"]}}
+        content = run_edit(
+            state["materia"], state["source_file"], state["edit_instruction"], vault, chroma
+        )
+        return {
+            "output": content,
+            "metadata": {"materia": state["materia"], "file": state["source_file"]},
+        }
 
     def validate_node(state: AgentState) -> dict:
         result = validate_output(state["output"] or "")
@@ -74,7 +82,9 @@ def build_graph(vault: VaultManager, chroma: ChromaClient, sqlite: SQLiteStore):
 
     def memory_node(state: AgentState) -> dict:
         if state.get("materia") and state.get("source_file") and state.get("output"):
-            update_memory(state["materia"], state["source_file"], state["output"], vault, chroma, sqlite)
+            update_memory(
+                state["materia"], state["source_file"], state["output"], vault, chroma, sqlite
+            )
         return {}
 
     def response_node(state: AgentState) -> dict:

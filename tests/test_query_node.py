@@ -1,4 +1,3 @@
-from pathlib import Path
 from unittest.mock import MagicMock, patch
 
 from resumini.agent.query_node import run_query
@@ -31,12 +30,22 @@ def test_query_returns_answer():
 
 def test_query_resolves_wikilinks(tmp_vault):
     vault = VaultManager(tmp_vault)
-    vault.write_note("civil", "prescripcion.md", "# Prescripcion civil\n\nLa prescripcion extintiva libera al deudor")
+    vault.write_note(
+        "civil",
+        "prescripcion.md",
+        "# Prescripcion civil\n\nLa prescripcion extintiva libera al deudor",
+    )
     chroma = MagicMock()
     chroma.search.return_value = [
-        {"id": "civil_prescripcion", "content": "prescripcion extintiva", "metadata": {"materia": "civil", "file": "prescripcion.md"}}
+        {
+            "id": "civil_prescripcion",
+            "content": "prescripcion extintiva",
+            "metadata": {"materia": "civil", "file": "prescripcion.md"},
+        }
     ]
     with patch("resumini.agent.query_node.get_llm") as mock_llm:
-        mock_llm.return_value.invoke.return_value = MagicMock(content="La prescripcion en derecho civil libera al deudor...")
+        mock_llm.return_value.invoke.return_value = MagicMock(
+            content="La prescripcion en derecho civil libera al deudor..."
+        )
         result = run_query("que dice [[prescripcion]] en civil?", vault, chroma)
     assert "prescripcion" in result.lower()

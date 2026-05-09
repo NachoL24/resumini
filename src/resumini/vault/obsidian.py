@@ -81,7 +81,9 @@ def _extract_callouts(body: str) -> list[Callout]:
                     i += 1
                 else:
                     break
-            callouts.append(Callout(type=callout_type, title=title, content="\n".join(content_lines)))
+            callouts.append(
+                Callout(type=callout_type, title=title, content="\n".join(content_lines))
+            )
         else:
             i += 1
     return callouts

@@ -53,9 +53,7 @@ def run_summarize(
                     today=today,
                 )
             ),
-            HumanMessage(
-                content=f"Genera un resumen de {source_file} para la materia {materia}"
-            ),
+            HumanMessage(content=f"Genera un resumen de {source_file} para la materia {materia}"),
         ]
     )
     summary = response.content

@@ -32,9 +32,7 @@ def run_edit(
     response = llm.invoke(
         [
             SystemMessage(
-                content=EDIT_PROMPT.format(
-                    current_content=body, edit_instruction=instruction
-                )
+                content=EDIT_PROMPT.format(current_content=body, edit_instruction=instruction)
             ),
             HumanMessage(content=instruction),
         ]

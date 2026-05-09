@@ -35,9 +35,7 @@ class SQLiteStore:
         self._conn.commit()
 
     def get_materia(self, nombre: str) -> dict | None:
-        row = self._conn.execute(
-            "SELECT * FROM materias WHERE nombre = ?", (nombre,)
-        ).fetchone()
+        row = self._conn.execute("SELECT * FROM materias WHERE nombre = ?", (nombre,)).fetchone()
         if not row:
             return None
         meta = json.loads(row["metadata_json"])
@@ -61,12 +59,12 @@ class SQLiteStore:
         self._conn.commit()
 
     def get_preference(self, key: str) -> str | None:
-        row = self._conn.execute(
-            "SELECT value FROM preferences WHERE key = ?", (key,)
-        ).fetchone()
+        row = self._conn.execute("SELECT value FROM preferences WHERE key = ?", (key,)).fetchone()
         return row["value"] if row else None
 
-    def add_session(self, session_id: str, query: str, timestamp: str, metadata: dict | None = None):
+    def add_session(
+        self, session_id: str, query: str, timestamp: str, metadata: dict | None = None
+    ):
         meta_json = json.dumps(metadata or {}, ensure_ascii=False)
         self._conn.execute(
             "INSERT OR REPLACE INTO sessions (session_id, query, timestamp, metadata_json) VALUES (?, ?, ?, ?)",

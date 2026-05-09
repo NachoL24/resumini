@@ -11,12 +11,14 @@ def run_ingest(
     pdf_path: Path, materia: str, filename: str, vault: VaultManager, chroma: ChromaClient
 ) -> str:
     raw_content = ingest_pdf(pdf_path)
-    frontmatter = render_frontmatter({
-        "materia": materia,
-        "type": "raw_ingest",
-        "source": str(pdf_path.name),
-        "date": date.today().isoformat(),
-    })
+    frontmatter = render_frontmatter(
+        {
+            "materia": materia,
+            "type": "raw_ingest",
+            "source": str(pdf_path.name),
+            "date": date.today().isoformat(),
+        }
+    )
     content_with_fm = f"{frontmatter}\n{raw_content}" if frontmatter else raw_content
     vault.write_note(materia, filename, content_with_fm)
     chroma.index_document(

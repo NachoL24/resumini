@@ -1,5 +1,3 @@
-from pathlib import Path
-
 from resumini.vault.migrate import migrate_vault
 from resumini.vault.obsidian import parse_note
 
@@ -33,9 +31,7 @@ def test_migrate_preserves_existing_frontmatter(tmp_path):
     materias = vault / "materias"
     civil = materias / "civil"
     civil.mkdir(parents=True)
-    (civil / "u1.md").write_text(
-        "---\nmateria: civil\ntype: raw_ingest\n---\n\n# U1\n\nContent"
-    )
+    (civil / "u1.md").write_text("---\nmateria: civil\ntype: raw_ingest\n---\n\n# U1\n\nContent")
 
     migrate_vault(vault)
 

@@ -77,7 +77,11 @@ def test_write_materia_index(vm):
 
 
 def test_read_obsidian_note(vm):
-    vm.write_note("civil", "test_obs.md", "---\nmateria: civil\ntype: summary\n---\n\n# Test\n\nSee [[penal/u1]]")
+    vm.write_note(
+        "civil",
+        "test_obs.md",
+        "---\nmateria: civil\ntype: summary\n---\n\n# Test\n\nSee [[penal/u1]]",
+    )
     note = vm.read_obsidian_note("civil", "test_obs.md")
     assert note.frontmatter["materia"] == "civil"
     assert "penal/u1" in note.wikilinks
@@ -87,7 +91,11 @@ def test_write_obsidian_note(vm):
     note = ObsidianNote(
         frontmatter={"materia": "civil", "type": "summary"},
         content="# My Summary\n\nContent here",
-        wikilinks=[], embeds=[], block_ids=[], tags=[], callouts=[],
+        wikilinks=[],
+        embeds=[],
+        block_ids=[],
+        tags=[],
+        callouts=[],
     )
     vm.write_obsidian_note("civil", "summary.md", note)
     raw = vm.read_note("civil", "summary.md")

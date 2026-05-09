@@ -44,9 +44,7 @@ def run_query(question: str, vault: VaultManager, chroma: ChromaClient) -> str:
     response = llm.invoke(
         [
             SystemMessage(
-                content=QUERY_PROMPT.format(
-                    profile=profile, context=context, question=question
-                )
+                content=QUERY_PROMPT.format(profile=profile, context=context, question=question)
             ),
             HumanMessage(content=question),
         ]

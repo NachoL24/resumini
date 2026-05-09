@@ -46,12 +46,14 @@ class ChromaClient:
         results = self._collection.query(**kwargs)
         docs = []
         for i, doc_id in enumerate(results["ids"][0]):
-            docs.append({
-                "id": doc_id,
-                "content": results["documents"][0][i],
-                "metadata": results["metadatas"][0][i],
-                "distance": results["distances"][0][i] if results.get("distances") else None,
-            })
+            docs.append(
+                {
+                    "id": doc_id,
+                    "content": results["documents"][0][i],
+                    "metadata": results["metadatas"][0][i],
+                    "distance": results["distances"][0][i] if results.get("distances") else None,
+                }
+            )
         return docs
 
     def delete_document(self, doc_id: str):
