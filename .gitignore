@@ -1,10 +1,12 @@
+.env
 __pycache__/
 *.pyc
-*.pyo
-.env
+chroma_data/
+resumini.db
 *.egg-info/
 dist/
 build/
 .pytest_cache/
-.chroma_data/
-resumini.db
+vault/materias/
+vault/.meta/sessions.json
+.ruff_cache/
