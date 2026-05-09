@@ -89,8 +89,8 @@ def _extract_callouts(body: str) -> list[Callout]:
 
 def parse_note(raw: str) -> ObsidianNote:
     fm, body = extract_frontmatter(raw)
-    wikilinks = _WIKILINK_RE.findall(body)
     embeds = _EMBED_RE.findall(body)
+    wikilinks = [w for w in _WIKILINK_RE.findall(body) if w not in embeds]
     block_ids = _BLOCK_ID_RE.findall(body)
     tags = [t for t in _TAG_RE.findall(body) if not _is_heading_tag(body, t)]
     callouts = _extract_callouts(body)
@@ -105,12 +105,19 @@ def parse_note(raw: str) -> ObsidianNote:
     )
 
 
+_HEADING_LINE_RE = re.compile(r"^#{1,6}\s+", re.MULTILINE)
+
+
 def _is_heading_tag(body: str, tag: str) -> bool:
-    heading_re = re.compile(r"^#{1,6}\s+.*(?:\s+|^)#" + re.escape(tag) + r"(?:\s|$)", re.MULTILINE)
-    if heading_re.search(body):
+    pattern = r"^#{1,6}\s+.*(?:\s+|^)#" + re.escape(tag) + r"(?:\s|$)"
+    if re.search(pattern, body, re.MULTILINE):
         return True
-    for m in re.finditer(r"^#{1,6}\s+(.+)$", body, re.MULTILINE):
-        heading_text = m.group(1).strip()
+    for m in _HEADING_LINE_RE.finditer(body):
+        start = m.start()
+        end = body.find("\n", start)
+        if end == -1:
+            end = len(body)
+        heading_text = body[start:end].strip()
         if heading_text == f"#{tag}" or heading_text.endswith(f" #{tag}"):
             return True
     return False

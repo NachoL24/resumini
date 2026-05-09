@@ -95,6 +95,14 @@ def test_parse_note_extracts_embeds():
     assert note.embeds == ["def_prescripcion", "shared/concepto"]
 
 
+def test_parse_note_embeds_not_counted_as_wikilinks():
+    raw = "# Note\n\n![[def_prescripcion]] and [[real_wikilink]]"
+    note = parse_note(raw)
+    assert note.embeds == ["def_prescripcion"]
+    assert "def_prescripcion" not in note.wikilinks
+    assert "real_wikilink" in note.wikilinks
+
+
 def test_parse_note_extracts_block_ids():
     raw = "# Note\n\nKey term ^prescripcion-extintiva\nOther line\nAnother ^block-2"
     note = parse_note(raw)
@@ -165,6 +173,15 @@ def test_parse_note_empty_content():
     assert note.block_ids == []
     assert note.tags == []
     assert note.callouts == []
+
+
+def test_roundtrip_parse_render():
+    raw = "---\nmateria: civil\ntype: summary\n---\n\n# Resumen\n\nSome content"
+    note = parse_note(raw)
+    rendered = render_note(note)
+    parsed_again = parse_note(rendered)
+    assert parsed_again.frontmatter == note.frontmatter
+    assert parsed_again.content.strip() == note.content.strip()
 
 
 @pytest.fixture
