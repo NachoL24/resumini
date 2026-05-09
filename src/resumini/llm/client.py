@@ -9,7 +9,8 @@ def get_llm(settings: Settings | None = None) -> ChatOpenAI:
     return ChatOpenAI(
         model=settings.llm_model,
         temperature=settings.llm_temperature,
-        api_key=settings.openai_api_key or None,
+        api_key=settings.nvidia_api_key or "placeholder",
+        base_url=settings.nvidia_base_url,
     )
 
 
@@ -18,5 +19,6 @@ def get_embeddings(settings: Settings | None = None) -> OpenAIEmbeddings:
         settings = get_settings()
     return OpenAIEmbeddings(
         model=settings.embedding_model,
-        api_key=settings.openai_api_key or None,
+        api_key=settings.nvidia_api_key or "placeholder",
+        base_url=settings.nvidia_base_url,
     )

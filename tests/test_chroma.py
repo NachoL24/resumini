@@ -5,7 +5,7 @@ from resumini.db.chroma import ChromaClient
 
 @pytest.fixture
 def chroma(tmp_chroma):
-    client = ChromaClient(persist_dir=str(tmp_chroma), embedding_model_name="text-embedding-3-small")
+    client = ChromaClient(persist_dir=str(tmp_chroma))
     return client
 
 

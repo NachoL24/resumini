@@ -8,15 +8,17 @@ class ChromaClient:
     def __init__(
         self,
         persist_dir: str,
-        embedding_model_name: str = "text-embedding-3-small",
-        openai_api_key: str | None = None,
+        embedding_model_name: str = "nvidia/nv-embedqa-e5-v5",
+        nvidia_api_key: str | None = None,
+        nvidia_base_url: str = "https://integrate.api.nvidia.com/v1",
     ):
         self._client = chromadb.PersistentClient(path=persist_dir)
-        api_key = openai_api_key or os.environ.get("OPENAI_API_KEY")
+        api_key = nvidia_api_key or os.environ.get("NVIDIA_API_KEY")
         if api_key:
             self._ef = embedding_functions.OpenAIEmbeddingFunction(
                 api_key=api_key,
                 model_name=embedding_model_name,
+                api_base=nvidia_base_url,
             )
         else:
             self._ef = embedding_functions.DefaultEmbeddingFunction()

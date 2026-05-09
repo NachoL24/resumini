@@ -16,7 +16,8 @@ def create_app() -> FastAPI:
     chroma = ChromaClient(
         persist_dir=str(settings.chroma_dir),
         embedding_model_name=settings.embedding_model,
-        openai_api_key=settings.openai_api_key or None,
+        nvidia_api_key=settings.nvidia_api_key or None,
+        nvidia_base_url=settings.nvidia_base_url,
     )
     sqlite = SQLiteStore(str(settings.db_path))
     sqlite.initialize()
@@ -88,7 +89,8 @@ def cli():
         chroma = ChromaClient(
             persist_dir=str(settings.chroma_dir),
             embedding_model_name=settings.embedding_model,
-            openai_api_key=settings.openai_api_key or None,
+            nvidia_api_key=settings.nvidia_api_key or None,
+            nvidia_base_url=settings.nvidia_base_url,
         )
         sqlite = SQLiteStore(str(settings.db_path))
         sqlite.initialize()
