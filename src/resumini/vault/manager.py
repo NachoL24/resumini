@@ -1,6 +1,13 @@
 import json
 from pathlib import Path
 
+from resumini.vault.obsidian import (
+    ObsidianNote,
+    parse_note,
+    render_note,
+    resolve_embed,
+    resolve_wikilink,
+)
 from resumini.vault.templates import MATERIA_INDEX, PROFILE
 
 
@@ -76,3 +83,64 @@ class VaultManager:
         (self.vault_dir / ".meta" / "sessions.json").write_text(
             json.dumps(sessions, indent=2, ensure_ascii=False)
         )
+
+    def read_obsidian_note(self, materia: str, filename: str) -> ObsidianNote:
+        raw = self.read_note(materia, filename)
+        return parse_note(raw)
+
+    def write_obsidian_note(self, materia: str, filename: str, note: ObsidianNote):
+        rendered = render_note(note)
+        self.write_note(materia, filename, rendered)
+
+    def find_note_by_title(self, title: str) -> Path | None:
+        return resolve_wikilink(title, self.vault_dir)
+
+    def get_embed_content(self, target: str, current_materia: str | None = None) -> str | None:
+        return resolve_embed(target, self.vault_dir, current_materia=current_materia)
+
+    def list_all_tags(self) -> dict[str, list[str]]:
+        tag_map: dict[str, list[str]] = {}
+        materias_dir = self.vault_dir / "materias"
+        if not materias_dir.exists():
+            return tag_map
+        for materia_dir in materias_dir.iterdir():
+            if not materia_dir.is_dir():
+                continue
+            for md_file in materia_dir.iterdir():
+                if not md_file.is_file() or not md_file.suffix == ".md":
+                    continue
+                try:
+                    raw = md_file.read_text()
+                    note = parse_note(raw)
+                    rel = str(md_file.relative_to(self.vault_dir))
+                    all_tags = list(note.tags)
+                    fm_tags = note.frontmatter.get("tags", [])
+                    if isinstance(fm_tags, list):
+                        all_tags.extend(str(t).lstrip("#") for t in fm_tags)
+                    elif isinstance(fm_tags, str):
+                        all_tags.append(fm_tags.lstrip("#"))
+                    for tag in all_tags:
+                        tag_map.setdefault(tag, []).append(rel)
+                except OSError:
+                    continue
+        return tag_map
+
+    def backlinks(self, note_title: str) -> list[Path]:
+        links: list[Path] = []
+        materias_dir = self.vault_dir / "materias"
+        if not materias_dir.exists():
+            return links
+        for materia_dir in materias_dir.iterdir():
+            if not materia_dir.is_dir():
+                continue
+            for md_file in materia_dir.iterdir():
+                if not md_file.is_file() or not md_file.suffix == ".md":
+                    continue
+                try:
+                    raw = md_file.read_text()
+                    note = parse_note(raw)
+                    if note_title in note.wikilinks:
+                        links.append(md_file)
+                except OSError:
+                    continue
+        return links
