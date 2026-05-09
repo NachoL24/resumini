@@ -1,9 +1,13 @@
+import logging
 import uuid
 from datetime import datetime
 
 from resumini.db.chroma import ChromaClient
 from resumini.db.sqlite import SQLiteStore
 from resumini.vault.manager import VaultManager
+from resumini.vault.obsidian import parse_note
+
+logger = logging.getLogger(__name__)
 
 
 def update_memory(
@@ -21,6 +25,13 @@ def update_memory(
         content=content,
         metadata={"materia": materia, "file": filename, "type": "auto"},
     )
+    note = parse_note(content)
+    for wl in note.wikilinks:
+        resolved = vault.find_note_by_title(wl)
+        if resolved is None:
+            logger.warning("Broken wikilink: [[%s]] in %s/%s", wl, materia, filename)
+    for tag in note.tags:
+        pass
     sid = session_id or str(uuid.uuid4())[:8]
     sqlite.add_session(sid, f"update {materia}/{filename}", datetime.now().isoformat())
     vault.add_session(
