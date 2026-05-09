@@ -1,11 +1,29 @@
-MATERIA_INDEX = """# {nombre}
+MATERIA_INDEX = """---
+materia: {nombre}
+type: index
+cuatrimestre: {cuatrimestre}
+profesor: {profesor}
+tags:
+  - {nombre}
+---
+
+# {nombre}
 
 - **Profesor**: {profesor}
 - **Cuatrimestre**: {cuatrimestre}
-- **Fuentes**: {fuentes}
-"""
+- **Fuentes**: {fuentes}"""
 
-RESUMEN = """# {titulo}
+RESUMEN = """---
+materia: {materia}
+type: summary
+source: {source}
+date: {date}
+tags:
+  - {materia}
+  - resumen
+---
+
+# {titulo}
 
 ## Ideas principales
 
@@ -15,12 +33,24 @@ RESUMEN = """# {titulo}
 
 {conceptos}
 
+## Conexiones
+
+{conexiones}
+
 ## Notas
 
-{notas}
-"""
+{notas}"""
 
-APUNTE_CLASE = """# Apunte de clase — {fecha}
+APUNTE_CLASE = """---
+materia: {materia}
+type: apunte
+fecha: {fecha}
+tags:
+  - {materia}
+  - apunte
+---
+
+# Apunte de clase — {fecha}
 
 ## Tema
 
@@ -32,10 +62,13 @@ APUNTE_CLASE = """# Apunte de clase — {fecha}
 
 ## Dudas
 
-{dudas}
-"""
+{dudas}"""
 
-PROFILE = """# Perfil de estudio
+PROFILE = """---
+type: profile
+---
+
+# Perfil de estudio
 
 ## Preferencias de estilo
 
@@ -48,5 +81,4 @@ PROFILE = """# Perfil de estudio
 
 ## Notas sobre mi estilo
 
-{notas}
-"""
+{notas}"""

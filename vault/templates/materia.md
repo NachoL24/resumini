@@ -1,3 +1,12 @@
+---
+materia: "{nombre}"
+type: index
+cuatrimestre: "{cuatrimestre}"
+profesor: "{profesor}"
+tags:
+  - "{nombre}"
+---
+
 # {nombre}
 
 - **Profesor**: {profesor}

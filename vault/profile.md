@@ -1,3 +1,7 @@
+---
+type: profile
+---
+
 # Perfil de estudio
 
 ## Preferencias de estilo

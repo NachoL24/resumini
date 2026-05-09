@@ -1,3 +1,13 @@
+---
+materia: "{materia}"
+type: summary
+source: "{source}"
+date: "{date}"
+tags:
+  - "{materia}"
+  - resumen
+---
+
 # {titulo}
 
 ## Ideas principales
@@ -8,7 +18,7 @@
 
 {conceptos}
 
-## Conexiones con otras unidades
+## Conexiones
 
 {conexiones}
 
