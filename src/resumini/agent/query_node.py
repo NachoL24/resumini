@@ -30,14 +30,23 @@ def _resolve_wikilinks_in_question(question: str, vault: VaultManager) -> list[s
     return extra_context
 
 
-def run_query(question: str, vault: VaultManager, chroma: ChromaClient) -> str:
-    search_results = chroma.search(question, n_results=5)
+def search_context(
+    question: str, vault: VaultManager, chroma: ChromaClient, n_results: int = 5
+) -> list[str]:
+    search_results = chroma.search(question, n_results=n_results)
     context_parts = []
     for r in search_results:
-        context_parts.append(f"[{r['metadata']['materia']}/{r['metadata']['file']}] {r['content']}")
+        context_parts.append(
+            f"[{r['metadata']['materia']}/{r['metadata']['file']}] {r['content']}"
+        )
     wikilink_context = _resolve_wikilinks_in_question(question, vault)
     for wc in wikilink_context:
         context_parts.append(wc)
+    return context_parts
+
+
+def run_query(question: str, vault: VaultManager, chroma: ChromaClient) -> str:
+    context_parts = search_context(question, vault, chroma, n_results=5)
     context = "\n\n".join(context_parts)
     profile = vault.read_profile()
     llm = get_llm()

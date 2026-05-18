@@ -1,5 +1,6 @@
 from langchain_core.messages import HumanMessage, SystemMessage
 
+from resumini.agent.memory_node import verify_wikilinks
 from resumini.db.chroma import ChromaClient
 from resumini.llm.client import get_llm
 from resumini.vault.manager import VaultManager
@@ -46,4 +47,5 @@ def run_edit(
         content=edited,
         metadata={"materia": materia, "file": filename, "type": "summary"},
     )
+    verify_wikilinks(materia, filename, edited, vault)
     return edited

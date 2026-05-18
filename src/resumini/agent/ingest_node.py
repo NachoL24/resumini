@@ -1,6 +1,7 @@
 from datetime import date
 from pathlib import Path
 
+from resumini.agent.memory_node import verify_wikilinks
 from resumini.db.chroma import ChromaClient
 from resumini.ingest.pdf import ingest_pdf
 from resumini.vault.manager import VaultManager
@@ -26,4 +27,5 @@ def run_ingest(
         content=content_with_fm,
         metadata={"materia": materia, "file": filename, "type": "raw_ingest"},
     )
+    verify_wikilinks(materia, filename, content_with_fm, vault)
     return content_with_fm

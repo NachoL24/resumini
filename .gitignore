@@ -3,6 +3,7 @@ __pycache__/
 *.pyc
 chroma_data/
 resumini.db
+checkpoints.db
 *.egg-info/
 dist/
 build/

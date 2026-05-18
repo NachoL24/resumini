@@ -1,45 +1,23 @@
-import logging
-import uuid
-from datetime import datetime
+"""Post-write hook: verify wikilinks resolve and log warnings for broken ones."""
 
-from resumini.db.chroma import ChromaClient
-from resumini.db.sqlite import SQLiteStore
+import logging
+
 from resumini.vault.manager import VaultManager
 from resumini.vault.obsidian import parse_note
 
 logger = logging.getLogger(__name__)
 
 
-def update_memory(
-    materia: str,
-    filename: str,
-    content: str,
-    vault: VaultManager,
-    chroma: ChromaClient,
-    sqlite: SQLiteStore,
-    session_id: str | None = None,
-):
-    vault.write_note(materia, filename, content)
-    chroma.index_document(
-        doc_id=f"{materia}_{filename.replace('.md', '')}",
-        content=content,
-        metadata={"materia": materia, "file": filename, "type": "auto"},
-    )
+def verify_wikilinks(
+    materia: str, filename: str, content: str, vault: VaultManager
+) -> list[str]:
+    """Check wikilinks in `content`. Return the list of broken targets and log warnings."""
     note = parse_note(content)
+    broken: list[str] = []
     for wl in note.wikilinks:
-        resolved = vault.find_note_by_title(wl)
-        if resolved is None:
-            logger.warning("Broken wikilink: [[%s]] in %s/%s", wl, materia, filename)
-    for tag in note.tags:
-        pass
-    sid = session_id or str(uuid.uuid4())[:8]
-    sqlite.add_session(sid, f"update {materia}/{filename}", datetime.now().isoformat())
-    vault.add_session(
-        {
-            "id": sid,
-            "action": "memory_update",
-            "materia": materia,
-            "file": filename,
-            "timestamp": datetime.now().isoformat(),
-        }
-    )
+        if vault.find_note_by_title(wl) is None:
+            broken.append(wl)
+            logger.warning(
+                "Broken wikilink: [[%s]] in %s/%s", wl, materia, filename
+            )
+    return broken

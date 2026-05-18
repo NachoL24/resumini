@@ -2,6 +2,7 @@ from datetime import date
 
 from langchain_core.messages import HumanMessage, SystemMessage
 
+from resumini.agent.memory_node import verify_wikilinks
 from resumini.db.chroma import ChromaClient
 from resumini.llm.client import get_llm
 from resumini.vault.manager import VaultManager
@@ -26,6 +27,9 @@ REGLAS DE FORMATO:
 Perfil del estudiante:
 {profile}
 
+Instrucciones especificas del estudiante para este resumen:
+{instructions}
+
 Contenido fuente:
 {content}
 
@@ -38,10 +42,12 @@ def run_summarize(
     output_file: str,
     vault: VaultManager,
     chroma: ChromaClient,
+    instructions: str | None = None,
 ) -> str:
     source_content = vault.read_note(materia, source_file)
     profile = vault.read_profile()
     today = date.today().isoformat()
+    instructions_block = instructions if instructions else "(ninguna)"
     llm = get_llm()
     response = llm.invoke(
         [
@@ -51,6 +57,7 @@ def run_summarize(
                     content=source_content,
                     materia=materia,
                     today=today,
+                    instructions=instructions_block,
                 )
             ),
             HumanMessage(content=f"Genera un resumen de {source_file} para la materia {materia}"),
@@ -63,4 +70,5 @@ def run_summarize(
         content=summary,
         metadata={"materia": materia, "file": output_file, "type": "summary"},
     )
+    verify_wikilinks(materia, output_file, summary, vault)
     return summary
